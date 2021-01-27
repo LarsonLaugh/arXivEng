@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/bootstrap.min.css')}}">
+    <script src="{{ url_for('static', filename='/bootstrap.min.js')}}"></script>
+    {% block head %} {% endblock %}
+</head>
+
+<body>
+    <style>
+        .container{
+            width: 100%;
+            margin:50px,50px;
+            min-width: 150px;
+            max-width: 800px;
+            padding-top: 150px;
+            justify-content: center;
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <div class = "alert alert-{{ category }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+    {% block body %} {% endblock %}
+</body>
+</html>

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block head %} 
+<title>{{ title }}</title>
+{% endblock %}
+
+{% block body %}
+
+<div class = "container">
+    
+    <form action = "" method = "POST">
+        <h2> Your must be a great researcher </h2>  
+        {{ form.hidden_tag() }}
+        <div class="d-grid gap-2 col-6 mx-auto">
+            <div class="d-grid gap-2">
+                <label class="form-label">{{ form.keyword.label }}</label>
+                {{ form.keyword }}
+            </div> 
+    
+            <div class="d-grid gap-2">
+                <label class="form-label">{{ form.max_results.label}}</label>
+                {{ form.max_results }}
+            </div>
+    
+            <div class="d-grid gap-2">
+                {{ form.submit(class="btn btn-primary" ) }}
+            </div>
+    
+        </div>
+    </form>
+
+</div>
+{% endblock %}
