@@ -4,33 +4,45 @@
 {% endblock %}
 
 {% block body %}
-<table class="table table-dark table-hover">
-    <caption>List of users</caption>
-    <thead>
-        <tr>
-          <th scope="col">ID</th>
-          <th scope="col">Published@</th>
-          <th scope="col">Author(s)</th>
-          <th scope="col">Title</th>
-          <th scope="col">Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for paper in papers %}
-        <tr>
-          <th scope="row">{{ paper.get('id').split('/')[-1] }}</th>
-          <td>{{ paper.get('published').split('T')[0] }}</td>
-          <td>{{ paper.get('author') }}</td>
-          <td>{{ paper.get('title')}}</td>
-          <td>
-            <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                    <form action="{{url_for('download',paper_id=paper.get('id').split('/')[-1])}}" method="POST">
-                        <button type="submit" class="btn btn-success">Download</button>
-                    </form>
-            </div>
-          </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<style>
+    #return_button {
+        margin-bottom: 1rem;
+    }
+</style>
+
+<form action="{{ url_for('search') }}">
+    <button type="submit" class="btn btn-primary" id="return_button">GoToEngine</button>
+</form>
+
+<form action="{{url_for('download')}}" method="POST">
+    <table class="table table-dark table-hover">
+        <caption>List of users</caption>
+        <thead>
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">Published@</th>
+              <th scope="col">Author(s)</th>
+              <th scope="col">Title</th>
+              <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for paper in papers %}
+            <tr>
+              <th scope="row">{{ paper.get('id').split('/')[-1] }}</th>
+              <td>{{ paper.get('published').split('T')[0] }}</td>
+              <td>{{ paper.get('author') }}</td>
+              <td>{{ paper.get('title')}}</td>
+              <td>
+                <input type="checkbox" name="download_list" value={{ paper.get('id').split('/')[-1] }}>
+              </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <button type="submit" class="btn btn-success">Download</button>
+</form>
+
+
+
 {% endblock %}

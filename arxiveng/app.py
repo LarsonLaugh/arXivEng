@@ -4,7 +4,7 @@ from flask_wtf import FlaskForm
 from wtforms import (StringField, PasswordField, BooleanField, SubmitField, SelectField,
 RadioField,TextAreaField, IntegerField)
 from wtforms.validators import (InputRequired, Email, Length, DataRequired, EqualTo, 
-ValidationError)
+ValidationError, NumberRange)
 
 
 
@@ -34,14 +34,16 @@ def search():
         return render_template('index.html',form=form)
 
 
-@app.route('/download/<paper_id>', methods = ['POST','GET'])
-def download(paper_id):
+@app.route('/download', methods = ['POST','GET'])
+def download():
     if request.method == 'POST':
         try:
-            paper_to_download = arxiv.query(id_list=[str(paper_id)])[0]
-            arxiv.download(paper_to_download, dirpath ='./instance/download/')
-            flash('Your download is completed.','success')
-            return redirect(url_for('search'))
+            if request.form.getlist('download_list'):
+                papers_to_download = arxiv.query(id_list=request.form.getlist('download_list'))
+                for paper in papers_to_download:
+                    arxiv.download(paper, dirpath ='./instance/download/')
+                flash('Your download is completed.','success')
+                return redirect(url_for('search'))
         except:
             flash('Your download failed.','danger')
             return redirect(url_for('search'))
@@ -51,16 +53,14 @@ def download(paper_id):
 
 # form
 
-
-
-
 fields = ['author','title']
 
 class SearchForm(FlaskForm):
     keyword = StringField('Keyword', validators=[
-                           InputRequired(), Length(max=100)])
+                           InputRequired(), Length(max=500)])
     # field = SelectField('field', choices = [field for field in fields])
-    max_results = IntegerField('Max Results')
+    max_results = IntegerField('Max Results',validators=[
+                           InputRequired(), NumberRange(min=0, max=1000)]) 
     submit = SubmitField('Run')
 
 
