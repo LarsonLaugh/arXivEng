@@ -49,9 +49,13 @@
         </tbody>
     </table>
     <div style="display: flex; flex-direction: row;">
-        {% for page_num in papers.iter_pages() %}
+        {% for page_num in papers.iter_pages(left_edge=1,right_edge=1,left_current=2,right_current=2) %}
             {% if page_num %}
-                <a class = "btn btn-outline-info mb-4" href="{{ url_for('kwSearch', page=page_num) }}">{{ page_num }}</a>
+                {% if page_num == papers.page %}
+                    <a class = "btn btn-info mb-4" href="{{ url_for('kwSearch', page=page_num) }}">{{ page_num }}</a>
+                {% else %}
+                    <a class = "btn btn-outline-info mb-4" href="{{ url_for('kwSearch', page=page_num) }}">{{ page_num }}</a>
+                {% endif %}
             {% else %}
                 ...
             {% endif %}

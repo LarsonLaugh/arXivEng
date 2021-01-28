@@ -42,20 +42,22 @@ def kwSearch():
             clear_cache()
             build_cache(papers)
             flash('Your keyword engine is on', 'success') 
-            papers = Paper.query.paginate(page=page, per_page=5)
+            papers = Paper.query.paginate(page=page, per_page=form.get('per_page'))
             return render_template('render_results.html', papers = papers, title ="Search Results")
         else:
             flash('Sorry. Your search request has been rejected', 'danger')
             return redirect(url_for('search'))
     else:
-        papers = Paper.query.paginate(page=page, per_page=5)
+        papers = Paper.query.paginate(page=page, per_page=form.get('per_page'))
+        # papers = Paper.query.order_by(Paper.publish_time.desc()).paginate(page=page, per_page=5)
         return render_template('render_results.html', papers = papers, title ="Search Results")
 
 
 
 @app.route('/advsearch', methods = ['POST','GET'])
 def advSearch():
-    page = request.args.get('page', 1, type=int)
+    page = request.args.get('page',1, type=int)
+
     if request.method == 'POST':
         form = dict(request.form)
         papers = arxiv.query(
@@ -68,7 +70,7 @@ def advSearch():
             clear_cache()
             build_cache(papers)
             flash('Your advanced engine is on', 'success')  
-            papers = Paper.query.paginate(page=page, per_page=5)
+            papers = Paper.query.paginate(page=page, per_page=form.get('per_page'))
             return render_template('render_results.html', papers = papers, title ="Search Results")
         else:
             flash('Sorry. Your search request has been rejected', 'danger')
