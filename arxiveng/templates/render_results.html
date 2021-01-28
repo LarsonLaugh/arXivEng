@@ -19,22 +19,30 @@
         <caption>List of users</caption>
         <thead>
             <tr>
+              <th scope="col">#</th>
               <th scope="col">ID</th>
-              <th scope="col">Published@</th>
               <th scope="col">Author(s)</th>
               <th scope="col">Title</th>
+              <th scope="col">Published@</th>
+              <th scope="col">Affiliation</th>
+              <th scope="col">Summary</th>
+              <th scope="col">Tag</th>
               <th scope="col">Action</th>
             </tr>
         </thead>
         <tbody>
             {% for paper in papers %}
             <tr>
-              <th scope="row">{{ paper.get('id').split('/')[-1] }}</th>
-              <td>{{ paper.get('published').split('T')[0] }}</td>
-              <td>{{ paper.get('author') }}</td>
-              <td>{{ paper.get('title')}}</td>
+              <th scope="row">{{ paper.id }}</th>
+              <td scope="row">{{ paper.paper_id }}</td>
+              <td>{{ paper.author}}</td>
+              <td>{{ paper.title}}</td>
+              <td>{{ paper.publish_time}}</td>
+              <td>{{ paper.affiliation}}</td>
+              <td>{{ paper.summary}}</td>
+              <td>{{ paper.tags}}</td>
               <td>
-                <input type="checkbox" name="download_list" value={{ paper.get('id').split('/')[-1] }}>
+                <input type="checkbox" name="download_list" value={{ paper.paper_id }}>
               </td>
             </tr>
             {% endfor %}
