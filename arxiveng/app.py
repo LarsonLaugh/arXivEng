@@ -19,26 +19,52 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Register Jinja filter
 app.jinja_env.filters['zip'] = zip
 
-
-
-@app.route('/',methods = ['POST','GET'])
+@app.route('/')
 def search():
-    form = SearchForm()
-    if request.method == 'POST':
-        papers = arxiv.query(
-            query = form.keyword.data,
-            max_results = form.max_results.data,   
-        )
-        if papers:
-            clear_cache()
-            build_cache(papers)
-            flash('Your search request has been accepted', 'success') 
-            return render_template('render_results.html', papers = Paper.query.all(), title ="Search Results")
-        else:
-            flash('Your search request has been rejected', 'danger')
-            return render_template('index.html',form=form)
+    form_kw = KSearchForm()
+    form_adv = ASearchForm()
+    return render_template('index.html',form_kw=form_kw, form_adv = form_adv)
+
+
+
+@app.route('/kwsearch',methods = ['POST'])
+def kwSearch():
+    form = dict(request.form)
+    papers = arxiv.query(
+        query = form.get('keyword'),
+        max_results = max_result_trans(form.get('max_results')),  
+        sort_by = form.get('sort_by'),
+        sort_order = form.get('sort_order')
+    )
+    if papers:
+        clear_cache()
+        build_cache(papers)
+        flash('Your keyword engineer is on', 'success') 
+        return render_template('render_results.html', papers = Paper.query.all(), title ="Search Results")
     else:
+        flash('Sorry. Your search request has been rejected', 'danger')
+        return render_template('index.html',form_kw=form_kw, form_adv = form_adv)
+
+
+
+@app.route('/advsearch',methods = ['POST'])
+def advSearch():
+    form = dict(request.form)
+    papers = arxiv.query(
+        query = render_query(form.get('field1_input'),form.get('field1_choice'),form.get('logic12'),form.get('field2_input'),form.get('field2_choice')),
+        max_results = max_result_trans(form.get('max_results')),  
+        sort_by = form.get('sort_by'),
+        sort_order = form.get('sort_order')
+    )
+    if papers:
+        clear_cache()
+        build_cache(papers)
+        flash('Your advanced engineer is on', 'success')  
+        return render_template('render_results.html', papers = Paper.query.all(), title ="Search Results")
+    else:
+        flash('Sorry. Your search request has been rejected', 'danger')
         return render_template('index.html',form=form)
+
 
 
 @app.route('/download', methods = ['POST','GET'])
@@ -62,13 +88,30 @@ def download():
 
 fields = ['author','title']
 
-class SearchForm(FlaskForm):
+class KSearchForm(FlaskForm):
     keyword = StringField('Keyword', validators=[
                            InputRequired(), Length(max=500)])
     # field = SelectField('field', choices = [field for field in fields])
-    max_results = IntegerField('Max Results', validators=[
-                            NumberRange(min=0, max=100, message="Do dot exceed 100 results")]) 
-    submit = SubmitField('Run')
+    max_results = SelectField('max_results', choices=["default","20","50","100","200"])
+    sort_by = SelectField('Sorted By', choices=["relevance","lastUpdatedDate","submittedDate"])
+    sort_order = SelectField('Sort Order', choices=["ascending","descending"])
+    submit = SubmitField('Go')
+
+
+class ASearchForm(FlaskForm):
+    field1_input = StringField('Field1Input', validators=[
+                           InputRequired(), Length(max=500)])
+    field1_choice = SelectField('Field1Choice', choices=["author","title","abstract","comment","subject"])
+    logic12 = SelectField('logic12', choices=["AND","OR","ANDNOT"])
+    field2_input = StringField('Field2Input', validators=[
+                           InputRequired(), Length(max=500)])
+    field2_choice = SelectField('Field2Choice', choices=["author","title","abstract","comment","subject"])
+
+    max_results = SelectField('max_results', choices=["default","20","50","100","200"]) 
+
+    sort_by = SelectField('Sorted By', choices=["relevance","lastUpdatedDate","submittedDate"])
+    sort_order = SelectField('Sort Order', choices=["ascending","descending"])
+    submit = SubmitField('Go')
 
 
 class DownloadForm(FlaskForm):
@@ -129,3 +172,29 @@ def store_tag_list(tag_list):
         return tag_list_str   
     else:
         print(f"the tag_list is empty!")
+
+def shortcut(field):
+    if field == "author":
+        return "au:"
+    elif field == "title":
+        return "ti:"
+    elif field == "abstract":
+        return "abs:"
+    elif field == "comment":
+        return "co:"
+    elif field == "subject":
+        return "cat:"
+    else:
+        return None
+
+
+
+def render_query(field1_input,field1_choice,logic12,field2_input,field2_choice):
+    return shortcut(field1_choice)+ field1_input +' '+ logic12 + ' '+ shortcut(field2_choice) + field2_input
+
+
+def max_result_trans(result):
+    if result == "default":
+        return 10
+    else:
+        return int(result)

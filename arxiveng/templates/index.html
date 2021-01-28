@@ -4,29 +4,109 @@
 {% endblock %}
 
 {% block body %}
+<style>
+    body{
+        height:100vh;
+    }
+    .panels {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        height: 500px;
+        width: 500px;
+        position: absolute;
+        left: 50%;
+        margin-left: -250px;
+        top: 50%;
+        margin-top: -250px;
 
-<div class = "container">
+    }
+    form {
+
+        margin-left: 30px;
+        margin-right: 30px;
+        align-items: center;
+        max-width: 400px;
+        min-width: 150px;
+/
+    }
+
+</style>
+
+<div class = "panels">
     
-    <form action = "" method = "POST">
-        <h2> Your must be a great researcher </h2>  
-        {{ form.hidden_tag() }}
+    <form action = "{{ url_for('kwSearch') }}" method = "POST">
+        {{ form_kw.hidden_tag() }}
         <div class="d-grid gap-2 col-6 mx-auto">
             <div class="d-grid gap-2">
-                <label class="form-label">{{ form.keyword.label }}</label>
-                {{ form.keyword }}
+                <label class="form-label">{{ form_kw.keyword.label }}</label>
+                {{ form_kw.keyword }}
             </div> 
     
             <div class="d-grid gap-2">
-                <label class="form-label">{{ form.max_results.label }}</label>
-                {{ form.max_results }}
+                <label class="form-label">{{ form_kw.max_results.label }}</label>
+                {{ form_kw.max_results }}
+            </div>
+
+            <div class="d-grid gap-2">
+                <label class="form-label">{{ form_kw.sort_by.label }}</label>
+                {{ form_kw.sort_by }}
+                <label class="form-label">{{ form_kw.sort_order.label }}</label>
+                {{ form_kw.sort_order }}
             </div>
     
             <div class="d-grid gap-2">
-                {{ form.submit(class="btn btn-primary") }}
+                {{ form_kw.submit(class="btn btn-primary") }}
+            </div>
+        </div>
+    </form>
+
+    <form action = "{{ url_for('advSearch') }}" method = "POST">
+            
+        {{ form_adv.hidden_tag() }}
+        <div class="d-grid gap-2 col-6 mx-auto">
+            <div class="d-grid gap-2">
+                <label class="form-label">{{ form_adv.field1_input.label }}</label>
+                {{ form_adv.field1_input }}
+            </div> 
+            <div class="d-grid gap-2">
+                <label class="form-label">{{ form_adv.field1_choice.label }}</label>
+                {{ form_adv.field1_choice }}
+            </div>
+            
+            <div class="d-grid gap-2">
+                <label class="form-label">{{ form_adv.logic12.label }}</label>
+                {{ form_adv.logic12 }}
+            </div>
+
+            <div class="d-grid gap-2">
+                <label class="form-label">{{ form_adv.field2_input.label }}</label>
+                {{ form_adv.field2_input }}
+            </div> 
+
+            <div class="d-grid gap-2">
+                <label class="form-label">{{ form_adv.field2_choice.label }}</label>
+                {{ form_adv.field2_choice }}
+            </div>
+
+            <div class="d-grid gap-2">
+                <label class="form-label">{{ form_adv.max_results.label }}</label>
+                {{ form_adv.max_results }}
+            </div>
+
+            <div class="d-grid gap-2">
+                <label class="form-label">{{ form_kw.sort_by.label }}</label>
+                {{ form_kw.sort_by }}
+                <label class="form-label">{{ form_kw.sort_order.label }}</label>
+                {{ form_kw.sort_order }}
+            </div>
+    
+            <div class="d-grid gap-2">
+                {{ form_adv.submit(class="btn btn-primary") }}
             </div>
     
         </div>
     </form>
-
+    
 </div>
 {% endblock %}
