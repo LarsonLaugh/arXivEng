@@ -29,7 +29,8 @@ def search():
 
 @app.route('/kwsearch', methods = ['POST', 'GET'])
 def kwSearch():
-    page = request.args.get('page', 1, type=int) 
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 5, type = int) 
     if request.method == "POST":
         form = dict(request.form)
         papers = arxiv.query(
@@ -42,22 +43,22 @@ def kwSearch():
             clear_cache()
             build_cache(papers)
             flash('Your keyword engine is on', 'success') 
-            papers = Paper.query.paginate(page=page, per_page=form.get('per_page'))
-            return render_template('render_results.html', papers = papers, title ="Search Results")
+            papers = Paper.query.paginate(page=page, per_page=per_page)
+            return render_template('render_results.html', papers = papers, title ="Search Results", selections = [5,10,20,50], per_page=per_page)
         else:
             flash('Sorry. Your search request has been rejected', 'danger')
             return redirect(url_for('search'))
     else:
-        papers = Paper.query.paginate(page=page, per_page=form.get('per_page'))
+        papers = Paper.query.paginate(page=page, per_page=per_page)
         # papers = Paper.query.order_by(Paper.publish_time.desc()).paginate(page=page, per_page=5)
-        return render_template('render_results.html', papers = papers, title ="Search Results")
+        return render_template('render_results.html', papers = papers, title ="Search Results", selections = [5,10,20,50], per_page=per_page)
 
 
 
 @app.route('/advsearch', methods = ['POST','GET'])
 def advSearch():
-    page = request.args.get('page',1, type=int)
-
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 5, type = int)
     if request.method == 'POST':
         form = dict(request.form)
         papers = arxiv.query(
@@ -70,14 +71,14 @@ def advSearch():
             clear_cache()
             build_cache(papers)
             flash('Your advanced engine is on', 'success')  
-            papers = Paper.query.paginate(page=page, per_page=form.get('per_page'))
-            return render_template('render_results.html', papers = papers, title ="Search Results")
+            papers = Paper.query.paginate(page=page, per_page=per_page)
+            return render_template('render_results.html', papers = papers, title ="Search Results", selections = [5,10,20,50], per_page=per_page)
         else:
             flash('Sorry. Your search request has been rejected', 'danger')
             return redirect(url_for('search'))
     else:
-        papers = Paper.query.paginate(page=page, per_page=5)
-        return render_template('render_results.html', papers = papers, title ="Search Results")
+        papers = Paper.query.paginate(page=page, per_page=per_page)
+        return render_template('render_results.html', papers = papers, title ="Search Results", selections = [5,10,20,50], per_page=per_page)
 
 
 @app.route('/download', methods = ['POST','GET'])
@@ -99,7 +100,6 @@ def download():
 
 # form
 
-fields = ['author','title']
 
 class KSearchForm(FlaskForm):
     keyword = StringField('Keyword', validators=[

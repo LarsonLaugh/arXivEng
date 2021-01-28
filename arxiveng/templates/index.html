@@ -6,101 +6,130 @@
 {% block body %}
 <style>
     body{
-        height:100vh;
-    }
-    .panels {
+        font-family: 'Montserrat Alternates' , sans-serif;
+        color:var(--clr-graydark);
         display: flex;
         flex-direction: row;
         align-items: center;
-        height: 100%;
-        width: 100%;
     }
-    form {
-        margin-left: 5%;
-        margin-right: 5%;
-        align-items: center;
-        width: 100%;
-        max-width: 500px;
-        min-width: 300px;
+
+    .wrapper{
+
+        width: 30rem;
+        padding: 2rem;
+        margin:2rem auto
+
     }
+    .title{
+        font-size: 2rem;
+        font-weight: bold;
+        text-align:center;
+        margin-bottom: 1rem;
+    }
+    .form-group{
+        display: flex;
+        flex-direction: column;
+        margin: 1rem 0;
+    }
+    .form-label{
+        font-size: 0.8rem;
+        margin-bottom: -0.2rem;
+        font-weight: bold;
+    }
+    .form-input{
+        /* border: none; */
+        padding:10px;
+        color:inherit;
+        font-family:inherit;
+        width: 16rem;
+    }
+
 
 
 </style>
-
-<div class = "panels">
+<div class="wrapper">
+    <div class = "form-group">
+        <div class="title"> Keyword </div>
+        <form action = "{{ url_for('kwSearch') }}" method = "POST">
+            {{ form_kw.hidden_tag() }}
+            <div class="d-grid gap-2 col-6 mx-auto">
+                <div class="d-grid gap-2">
+                    <label class="form-label">{{ form_kw.keyword.label }}</label>
+                    {{ form_kw.keyword(class="form-input") }}
+                </div> 
+        
+                <div class="d-grid gap-2">
+                    <label class="form-label">{{ form_kw.max_results.label }}</label>
+                    {{ form_kw.max_results }}
+                </div>
     
-    <form action = "{{ url_for('kwSearch') }}" method = "POST">
-        {{ form_kw.hidden_tag() }}
-        <div class="d-grid gap-2 col-6 mx-auto">
-            <div class="d-grid gap-2">
-                <label class="form-label">{{ form_kw.keyword.label }}</label>
-                {{ form_kw.keyword }}
-            </div> 
-    
-            <div class="d-grid gap-2">
-                <label class="form-label">{{ form_kw.max_results.label }}</label>
-                {{ form_kw.max_results }}
+                <div class="d-grid gap-2">
+                    <label class="form-label">{{ form_kw.sort_by.label }}</label>
+                    {{ form_kw.sort_by }}
+                    <label class="form-label">{{ form_kw.sort_order.label }}</label>
+                    {{ form_kw.sort_order }}
+                </div>
+        
+                <div class="d-grid gap-2">
+                    {{ form_kw.submit(class="btn btn-primary",style="width:16rem; margin-top:2rem") }}
+                </div>
             </div>
-
-            <div class="d-grid gap-2">
-                <label class="form-label">{{ form_kw.sort_by.label }}</label>
-                {{ form_kw.sort_by }}
-                <label class="form-label">{{ form_kw.sort_order.label }}</label>
-                {{ form_kw.sort_order }}
-            </div>
-    
-            <div class="d-grid gap-2">
-                {{ form_kw.submit(class="btn btn-primary") }}
-            </div>
-        </div>
-    </form>
-
-    <form action = "{{ url_for('advSearch') }}" method = "POST">
-            
-        {{ form_adv.hidden_tag() }}
-        <div class="d-grid gap-2 col-6 mx-auto">
-            <div class="d-grid gap-2">
-                <label class="form-label">{{ form_adv.field1_input.label }}</label>
-                {{ form_adv.field1_input(placeholder="refer to subject classifications to use subject field ") }}
-            </div> 
-            <div class="d-grid gap-2">
-                <label class="form-label">{{ form_adv.field1_choice.label }}</label>
-                {{ form_adv.field1_choice }}
-            </div>
-            
-            <div class="d-grid gap-2">
-                <label class="form-label">{{ form_adv.logic12.label }}</label>
-                {{ form_adv.logic12 }}
-            </div>
-
-            <div class="d-grid gap-2">
-                <label class="form-label">{{ form_adv.field2_input.label }}</label>
-                {{ form_adv.field2_input(placeholder="refer to subject classifications to use subject field ") }}
-            </div> 
-
-            <div class="d-grid gap-2">
-                <label class="form-label">{{ form_adv.field2_choice.label }}</label>
-                {{ form_adv.field2_choice }}
-            </div>
-
-            <div class="d-grid gap-2">
-                <label class="form-label">{{ form_adv.max_results.label }}</label>
-                {{ form_adv.max_results }}
-            </div>
-
-            <div class="d-grid gap-2">
-                <label class="form-label">{{ form_kw.sort_by.label }}</label>
-                {{ form_kw.sort_by }}
-                <label class="form-label">{{ form_kw.sort_order.label }}</label>
-                {{ form_kw.sort_order }}
-            </div>
-    
-            <div class="d-grid gap-2">
-                {{ form_adv.submit(class="btn btn-primary") }}
-            </div>
-    
-        </div>
-    </form>
-    
+        </form>
+    </div>
 </div>
+
+
+<div class="wrapper">
+    <div class="form-group">
+        <div class="title">Advanced</div>
+        <form action = "{{ url_for('advSearch') }}" method = "POST">
+                
+            {{ form_adv.hidden_tag() }}
+            <div class="d-grid gap-2 col-6 mx-auto">
+                <div class="d-grid gap-2">
+                    <label class="form-label">{{ form_adv.field1_input.label }}</label>
+                    {{ form_adv.field1_input(class="form-input") }}
+                </div> 
+                <div class="d-grid gap-2">
+                    <label class="form-label">{{ form_adv.field1_choice.label }}</label>
+                    {{ form_adv.field1_choice }}
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <label class="form-label">{{ form_adv.logic12.label }}</label>
+                    {{ form_adv.logic12 }}
+                </div>
+    
+                <div class="d-grid gap-2">
+                    <label class="form-label">{{ form_adv.field2_input.label }}</label>
+                    {{ form_adv.field2_input(class="form-input") }}
+                </div> 
+    
+                <div class="d-grid gap-2">
+                    <label class="form-label">{{ form_adv.field2_choice.label }}</label>
+                    {{ form_adv.field2_choice }}
+                </div>
+    
+                <div class="d-grid gap-2">
+                    <label class="form-label">{{ form_adv.max_results.label }}</label>
+                    {{ form_adv.max_results }}
+                </div>
+    
+                <div class="d-grid gap-2">
+                    <label class="form-label">{{ form_kw.sort_by.label }}</label>
+                    {{ form_kw.sort_by }}
+                    <label class="form-label">{{ form_kw.sort_order.label }}</label>
+                    {{ form_kw.sort_order }}
+                </div>
+        
+                <div class="d-grid gap-2">
+                    {{ form_adv.submit(class="btn btn-primary", style="width:16rem; margin-top:2rem") }}
+                </div>
+        
+            </div>
+        </form>
+    </div>
+</div>
+
+
 {% endblock %}

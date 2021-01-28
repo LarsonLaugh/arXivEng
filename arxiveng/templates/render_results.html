@@ -14,6 +14,16 @@
     <button type="submit" class="btn btn-primary" id="return_button">GoToEngine</button>
 </form>
 
+{% for selection in selections %}
+    {% if selection == per_page %}
+        <a class = "btn btn-warning mb-4" href="{{ url_for('kwSearch', per_page=selection) }}">{{ selection }}</a>
+
+    {% else %}
+        <a class = "btn btn-outline-warning mb-4" href="{{ url_for('kwSearch', per_page=selection) }}">{{ selection }}</a>
+    {% endif %}
+{% endfor %}
+
+
 <form action="{{url_for('download')}}" method="POST">
     <table class="table table-dark table-hover">
         <caption>List of users</caption>
@@ -42,7 +52,7 @@
               <td>{{ paper.summary}}</td>
               <td>{{ paper.tags}}</td>
               <td>
-                <input type="checkbox" name="download_list" value={{ paper.paper_id }}>
+                <input type="checkbox" name="download_list" value="{{ paper.paper_id }}">
               </td>
             </tr>
             {% endfor %}
@@ -52,9 +62,9 @@
         {% for page_num in papers.iter_pages(left_edge=1,right_edge=1,left_current=2,right_current=2) %}
             {% if page_num %}
                 {% if page_num == papers.page %}
-                    <a class = "btn btn-info mb-4" href="{{ url_for('kwSearch', page=page_num) }}">{{ page_num }}</a>
+                    <a class = "btn btn-info mb-4" href="{{ url_for('kwSearch', page=page_num, per_page=per_page) }}">{{ page_num }}</a>
                 {% else %}
-                    <a class = "btn btn-outline-info mb-4" href="{{ url_for('kwSearch', page=page_num) }}">{{ page_num }}</a>
+                    <a class = "btn btn-outline-info mb-4" href="{{ url_for('kwSearch', page=page_num, per_page=per_page) }}">{{ page_num }}</a>
                 {% endif %}
             {% else %}
                 ...
@@ -62,6 +72,7 @@
         {% endfor %}
         <button type="submit" class="btn btn-primary" style="margin-left: 30px;">Download</button>
     </div>
+
 
 </form>
 
