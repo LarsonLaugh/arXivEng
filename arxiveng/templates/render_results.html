@@ -31,7 +31,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for paper in papers %}
+            {% for paper in papers.items %}
             <tr>
               <th scope="row">{{ paper.id }}</th>
               <td scope="row">{{ paper.paper_id }}</td>
@@ -48,7 +48,17 @@
             {% endfor %}
         </tbody>
     </table>
-    <button type="submit" class="btn btn-success">Download</button>
+    <div style="display: flex; flex-direction: row;">
+        {% for page_num in papers.iter_pages() %}
+            {% if page_num %}
+                <a class = "btn btn-outline-info mb-4" href="{{ url_for('kwSearch', page=page_num) }}">{{ page_num }}</a>
+            {% else %}
+                ...
+            {% endif %}
+        {% endfor %}
+        <button type="submit" class="btn btn-primary" style="margin-left: 30px;">Download</button>
+    </div>
+
 </form>
 
 

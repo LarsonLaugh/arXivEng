@@ -27,44 +27,55 @@ def search():
 
 
 
-@app.route('/kwsearch',methods = ['POST'])
+@app.route('/kwsearch', methods = ['POST', 'GET'])
 def kwSearch():
-    form = dict(request.form)
-    papers = arxiv.query(
-        query = form.get('keyword'),
-        max_results = max_result_trans(form.get('max_results')),  
-        sort_by = form.get('sort_by'),
-        sort_order = form.get('sort_order')
-    )
-    if papers:
-        clear_cache()
-        build_cache(papers)
-        flash('Your keyword engineer is on', 'success') 
-        return render_template('render_results.html', papers = Paper.query.all(), title ="Search Results")
+    page = request.args.get('page', 1, type=int) 
+    if request.method == "POST":
+        form = dict(request.form)
+        papers = arxiv.query(
+            query = form.get('keyword'),
+            max_results = max_result_trans(form.get('max_results')),  
+            sort_by = form.get('sort_by'),
+            sort_order = form.get('sort_order')
+        )
+        if papers:
+            clear_cache()
+            build_cache(papers)
+            flash('Your keyword engine is on', 'success') 
+            papers = Paper.query.paginate(page=page, per_page=5)
+            return render_template('render_results.html', papers = papers, title ="Search Results")
+        else:
+            flash('Sorry. Your search request has been rejected', 'danger')
+            return redirect(url_for('search'))
     else:
-        flash('Sorry. Your search request has been rejected', 'danger')
-        return render_template('index.html',form_kw=form_kw, form_adv = form_adv)
+        papers = Paper.query.paginate(page=page, per_page=5)
+        return render_template('render_results.html', papers = papers, title ="Search Results")
 
 
 
-@app.route('/advsearch',methods = ['POST'])
+@app.route('/advsearch', methods = ['POST','GET'])
 def advSearch():
-    form = dict(request.form)
-    papers = arxiv.query(
-        query = render_query(form.get('field1_input'),form.get('field1_choice'),form.get('logic12'),form.get('field2_input'),form.get('field2_choice')),
-        max_results = max_result_trans(form.get('max_results')),  
-        sort_by = form.get('sort_by'),
-        sort_order = form.get('sort_order')
-    )
-    if papers:
-        clear_cache()
-        build_cache(papers)
-        flash('Your advanced engineer is on', 'success')  
-        return render_template('render_results.html', papers = Paper.query.all(), title ="Search Results")
+    page = request.args.get('page', 1, type=int)
+    if request.method == 'POST':
+        form = dict(request.form)
+        papers = arxiv.query(
+            query = render_query(form.get('field1_input'),form.get('field1_choice'),form.get('logic12'),form.get('field2_input'),form.get('field2_choice')),
+            max_results = max_result_trans(form.get('max_results')),  
+            sort_by = form.get('sort_by'),
+            sort_order = form.get('sort_order')
+        )
+        if papers:
+            clear_cache()
+            build_cache(papers)
+            flash('Your advanced engine is on', 'success')  
+            papers = Paper.query.paginate(page=page, per_page=5)
+            return render_template('render_results.html', papers = papers, title ="Search Results")
+        else:
+            flash('Sorry. Your search request has been rejected', 'danger')
+            return redirect(url_for('search'))
     else:
-        flash('Sorry. Your search request has been rejected', 'danger')
-        return render_template('index.html',form=form)
-
+        papers = Paper.query.paginate(page=page, per_page=5)
+        return render_template('render_results.html', papers = papers, title ="Search Results")
 
 
 @app.route('/download', methods = ['POST','GET'])
@@ -94,7 +105,7 @@ class KSearchForm(FlaskForm):
     # field = SelectField('field', choices = [field for field in fields])
     max_results = SelectField('max_results', choices=["default","20","50","100","200"])
     sort_by = SelectField('Sorted By', choices=["relevance","lastUpdatedDate","submittedDate"])
-    sort_order = SelectField('Sort Order', choices=["ascending","descending"])
+    sort_order = SelectField('Sort Order', choices=["descending","ascending"])
     submit = SubmitField('Go')
 
 
@@ -110,7 +121,7 @@ class ASearchForm(FlaskForm):
     max_results = SelectField('max_results', choices=["default","20","50","100","200"]) 
 
     sort_by = SelectField('Sorted By', choices=["relevance","lastUpdatedDate","submittedDate"])
-    sort_order = SelectField('Sort Order', choices=["ascending","descending"])
+    sort_order = SelectField('Sort Order', choices=["descending","ascending"])
     submit = SubmitField('Go')
 
 
