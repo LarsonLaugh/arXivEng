@@ -30,7 +30,9 @@ def search():
 @app.route('/kwsearch', methods = ['POST', 'GET'])
 def kwSearch():
     page = request.args.get('page', 1, type=int)
-    per_page = request.args.get('per_page', 5, type = int) 
+    per_page = request.args.get('per_page', 5, type = int)
+    sort_by = request.args.get('sort_by','none',type = str)
+    sort_order = request.args.get('sort_order','desc',type = str)
     if request.method == "POST":
         form = dict(request.form)
         papers = arxiv.query(
@@ -44,14 +46,20 @@ def kwSearch():
             build_cache(papers)
             flash('Your keyword engine is on', 'success') 
             papers = Paper.query.paginate(page=page, per_page=per_page)
-            return render_template('render_results.html', papers = papers, title ="Search Results", selections = [5,10,20,50], per_page=per_page)
+            return render_template('render_results.html', papers = papers, title ="Search Results", selections = [5,10,20,50], 
+            per_page=per_page, sort_by = sort_by, sort_order = sort_order)
         else:
             flash('Sorry. Your search request has been rejected', 'danger')
             return redirect(url_for('search'))
     else:
-        papers = Paper.query.paginate(page=page, per_page=per_page)
-        # papers = Paper.query.order_by(Paper.publish_time.desc()).paginate(page=page, per_page=5)
-        return render_template('render_results.html', papers = papers, title ="Search Results", selections = [5,10,20,50], per_page=per_page)
+        if sort_by == 'time' and sort_order == 'desc':
+            papers = Paper.query.order_by(Paper.publish_time.desc()).paginate(page=page, per_page=per_page)
+        elif sort_by == 'time' and sort_order == 'asc':
+            papers = Paper.query.order_by(Paper.publish_time.asc()).paginate(page=page, per_page=per_page)
+        else:
+            papers = Paper.query.paginate(page=page, per_page=per_page)
+        return render_template('render_results.html', papers = papers, title ="Search Results", selections = [5,10,20,50], 
+        per_page=per_page, sort_by = sort_by, sort_order = sort_order)
 
 
 
@@ -77,7 +85,12 @@ def advSearch():
             flash('Sorry. Your search request has been rejected', 'danger')
             return redirect(url_for('search'))
     else:
-        papers = Paper.query.paginate(page=page, per_page=per_page)
+        if sort_by == 'time' and sort_order == 'desc':
+            papers = Paper.query.order_by(Paper.publish_time.desc()).paginate(page=page, per_page=per_page)
+        elif sort_by == 'time' and sort_order == 'asc':
+            papers = Paper.query.order_by(Paper.publish_time.asc()).paginate(page=page, per_page=per_page)
+        else:
+            papers = Paper.query.paginate(page=page, per_page=per_page)
         return render_template('render_results.html', papers = papers, title ="Search Results", selections = [5,10,20,50], per_page=per_page)
 
 
@@ -90,12 +103,12 @@ def download():
                 for paper in papers_to_download:
                     arxiv.download(paper, dirpath ='./instance/download/')
                 flash('Your download is completed.','success')
-                return render_template('render_results.html', papers = Paper.query.all(), title ="Search Results")
+                return redirect(url_for('kwSearch'))
         except:
-            flash('Your download failed.','danger')
-            return render_template('render_results.html', papers = Paper.query.all(), title ="Search Results")
+            flash('Your download failed. The paper may not be rightful to download','danger')
+            return redirect(url_for('kwSearch'))
     else:
-        return render_template('render_results.html', papers = Paper.query.all(), title ="Previous Search Results")
+        return redirect(url_for('kwSearch'))
         
 
 # form
