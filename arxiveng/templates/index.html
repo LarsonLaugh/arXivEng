@@ -47,7 +47,7 @@
 <div class="wrapper">
     <div class = "form-group">
         <div class="title"> Keyword </div>
-        <form action = "{{ url_for('kwSearch') }}" method = "POST">
+        <form action = "{{ url_for('result',engine='kw')}}" method = "POST">
             {{ form_kw.hidden_tag() }}
             <div class="d-grid gap-2 col-6 mx-auto">
                 <div class="d-grid gap-2">
@@ -79,7 +79,7 @@
 <div class="wrapper">
     <div class="form-group">
         <div class="title">Advanced</div>
-        <form action = "{{ url_for('advSearch') }}" method = "POST">
+        <form action = "{{ url_for('result',engine='adv') }}" method = "POST">
                 
             {{ form_adv.hidden_tag() }}
             <div class="d-grid gap-2 col-6 mx-auto">

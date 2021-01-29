@@ -16,12 +16,16 @@
 
 {% for selection in selections %}
     {% if selection == per_page %}
-        <a class = "btn btn-warning mb-4" href="{{ url_for('kwSearch', per_page=selection) }}">{{ selection }}</a>
+        <a class = "btn btn-warning mb-4" href="{{ url_for('result', per_page=selection) }}">{{ selection }}</a>
 
     {% else %}
-        <a class = "btn btn-outline-warning mb-4" href="{{ url_for('kwSearch', per_page=selection) }}">{{ selection }}</a>
+        <a class = "btn btn-outline-warning mb-4" href="{{ url_for('result', per_page=selection) }}">{{ selection }}</a>
     {% endif %}
 {% endfor %}
+
+<a class = "btn btn-outline-primary mb-4" href="{{ url_for('result', per_page=per_page, sort_by = 'time', sort_order = 'asc') }}">ascSort</a>
+<a class = "btn btn-outline-primary mb-4" href="{{ url_for('result', per_page=per_page, sort_by = 'time', sort_order = 'desc') }}">descSort</a>
+
 
 
 <form action="{{url_for('download')}}" method="POST">
@@ -62,9 +66,9 @@
         {% for page_num in papers.iter_pages(left_edge=1,right_edge=1,left_current=2,right_current=2) %}
             {% if page_num %}
                 {% if page_num == papers.page %}
-                    <a class = "btn btn-info mb-4" href="{{ url_for('kwSearch', page=page_num, per_page=per_page) }}">{{ page_num }}</a>
+                    <a class = "btn btn-info mb-4" href="{{ url_for('result', page=page_num, per_page=per_page, sort_by = sort_by, sort_order = sort_order) }}">{{ page_num }}</a>
                 {% else %}
-                    <a class = "btn btn-outline-info mb-4" href="{{ url_for('kwSearch', page=page_num, per_page=per_page) }}">{{ page_num }}</a>
+                    <a class = "btn btn-outline-info mb-4" href="{{ url_for('result', page=page_num, per_page=per_page, sort_by = sort_by, sort_order = sort_order) }}">{{ page_num }}</a>
                 {% endif %}
             {% else %}
                 ...
