@@ -27,30 +27,45 @@ def search():
 
 
 
-@app.route('/kwsearch', methods = ['POST', 'GET'])
-def kwSearch():
+@app.route('/result', methods = ['POST','GET'])
+def result():
+    engine = request.args.get('engine')
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 5, type = int)
     sort_by = request.args.get('sort_by','none',type = str)
     sort_order = request.args.get('sort_order','desc',type = str)
-    if request.method == "POST":
+
+    if request.method == 'POST':
         form = dict(request.form)
-        papers = arxiv.query(
-            query = form.get('keyword'),
-            max_results = max_result_trans(form.get('max_results')),  
-            sort_by = form.get('sort_by'),
-            sort_order = form.get('sort_order')
-        )
+        if engine == 'kw':
+            papers = arxiv.query(
+                query = form.get('keyword'),
+                max_results = max_result_trans(form.get('max_results')),  
+                sort_by = form.get('sort_by'),
+                sort_order = form.get('sort_order')
+            )
+            flash('Your keyword engine is on', 'success') 
+        elif engine == 'adv':
+            papers = arxiv.query(
+                query = render_query(form.get('field1_input'),form.get('field1_choice'),form.get('logic12'),form.get('field2_input'),form.get('field2_choice')),
+                max_results = max_result_trans(form.get('max_results')),  
+                sort_by = form.get('sort_by'),
+                sort_order = form.get('sort_order'))
+            flash('Your advanced engine is on', 'success')
+
+        else:
+            flash(f'choose an engine to go on!','warning')
+
         if papers:
             clear_cache()
             build_cache(papers)
-            flash('Your keyword engine is on', 'success') 
             papers = Paper.query.paginate(page=page, per_page=per_page)
-            return render_template('render_results.html', papers = papers, title ="Search Results", selections = [5,10,20,50], 
+            return render_template('render_results.html', papers = papers, title ="Search Results", selections = [5,10,20,50], engine = engine,
             per_page=per_page, sort_by = sort_by, sort_order = sort_order)
         else:
-            flash('Sorry. Your search request has been rejected', 'danger')
+            flash('Sorry. no result is available in arXiv', 'warning')
             return redirect(url_for('search'))
+
     else:
         if sort_by == 'time' and sort_order == 'desc':
             papers = Paper.query.order_by(Paper.publish_time.desc()).paginate(page=page, per_page=per_page)
@@ -58,40 +73,77 @@ def kwSearch():
             papers = Paper.query.order_by(Paper.publish_time.asc()).paginate(page=page, per_page=per_page)
         else:
             papers = Paper.query.paginate(page=page, per_page=per_page)
-        return render_template('render_results.html', papers = papers, title ="Search Results", selections = [5,10,20,50], 
+        return render_template('render_results.html', papers = papers, title ="Search Results", selections = [5,10,20,50], engine = engine,
         per_page=per_page, sort_by = sort_by, sort_order = sort_order)
 
 
 
-@app.route('/advsearch', methods = ['POST','GET'])
-def advSearch():
-    page = request.args.get('page', 1, type=int)
-    per_page = request.args.get('per_page', 5, type = int)
-    if request.method == 'POST':
-        form = dict(request.form)
-        papers = arxiv.query(
-            query = render_query(form.get('field1_input'),form.get('field1_choice'),form.get('logic12'),form.get('field2_input'),form.get('field2_choice')),
-            max_results = max_result_trans(form.get('max_results')),  
-            sort_by = form.get('sort_by'),
-            sort_order = form.get('sort_order')
-        )
-        if papers:
-            clear_cache()
-            build_cache(papers)
-            flash('Your advanced engine is on', 'success')  
-            papers = Paper.query.paginate(page=page, per_page=per_page)
-            return render_template('render_results.html', papers = papers, title ="Search Results", selections = [5,10,20,50], per_page=per_page)
-        else:
-            flash('Sorry. Your search request has been rejected', 'danger')
-            return redirect(url_for('search'))
-    else:
-        if sort_by == 'time' and sort_order == 'desc':
-            papers = Paper.query.order_by(Paper.publish_time.desc()).paginate(page=page, per_page=per_page)
-        elif sort_by == 'time' and sort_order == 'asc':
-            papers = Paper.query.order_by(Paper.publish_time.asc()).paginate(page=page, per_page=per_page)
-        else:
-            papers = Paper.query.paginate(page=page, per_page=per_page)
-        return render_template('render_results.html', papers = papers, title ="Search Results", selections = [5,10,20,50], per_page=per_page)
+
+# @app.route('/kwsearch', methods = ['POST', 'GET'])
+# def kwSearch():
+#     page = request.args.get('page', 1, type=int)
+#     per_page = request.args.get('per_page', 5, type = int)
+#     sort_by = request.args.get('sort_by','none',type = str)
+#     sort_order = request.args.get('sort_order','desc',type = str)
+#     if request.method == "POST":
+#         form = dict(request.form)
+#         papers = arxiv.query(
+#             query = form.get('keyword'),
+#             max_results = max_result_trans(form.get('max_results')),  
+#             sort_by = form.get('sort_by'),
+#             sort_order = form.get('sort_order')
+#         )
+#         if papers:
+#             clear_cache()
+#             build_cache(papers)
+#             flash('Your keyword engine is on', 'success') 
+#             papers = Paper.query.paginate(page=page, per_page=per_page)
+#             return render_template('render_results.html', papers = papers, title ="Search Results", selections = [5,10,20,50], 
+#             per_page=per_page, sort_by = sort_by, sort_order = sort_order)
+#         else:
+#             flash('Sorry. no result is available in arXiv', 'warning')
+#             return redirect(url_for('search'))
+#     else:
+#         if sort_by == 'time' and sort_order == 'desc':
+#             papers = Paper.query.order_by(Paper.publish_time.desc()).paginate(page=page, per_page=per_page)
+#         elif sort_by == 'time' and sort_order == 'asc':
+#             papers = Paper.query.order_by(Paper.publish_time.asc()).paginate(page=page, per_page=per_page)
+#         else:
+#             papers = Paper.query.paginate(page=page, per_page=per_page)
+#         return render_template('render_results.html', papers = papers, title ="Search Results", selections = [5,10,20,50], 
+#         per_page=per_page, sort_by = sort_by, sort_order = sort_order)
+
+
+
+# @app.route('/advsearch', methods = ['POST','GET'])
+# def advSearch():
+#     page = request.args.get('page', 1, type=int)
+#     per_page = request.args.get('per_page', 5, type = int)
+#     if request.method == 'POST':
+#         form = dict(request.form)
+#         papers = arxiv.query(
+#             query = render_query(form.get('field1_input'),form.get('field1_choice'),form.get('logic12'),form.get('field2_input'),form.get('field2_choice')),
+#             max_results = max_result_trans(form.get('max_results')),  
+#             sort_by = form.get('sort_by'),
+#             sort_order = form.get('sort_order')
+#         )
+#         if papers:
+#             clear_cache()
+#             build_cache(papers)
+#             flash('Your advanced engine is on', 'success')  
+#             papers = Paper.query.paginate(page=page, per_page=per_page)
+#             return render_template('render_results.html', papers = papers, title ="Search Results", selections = [5,10,20,50], per_page=per_page)
+#         else:
+#             flash('Sorry. no result is available in arXiv', 'warning')
+#             return redirect(url_for('search'))
+#     else:
+#         if sort_by == 'time' and sort_order == 'desc':
+#             papers = Paper.query.order_by(Paper.publish_time.desc()).paginate(page=page, per_page=per_page)
+#         elif sort_by == 'time' and sort_order == 'asc':
+#             papers = Paper.query.order_by(Paper.publish_time.asc()).paginate(page=page, per_page=per_page)
+#         else:
+#             papers = Paper.query.paginate(page=page, per_page=per_page)
+#         return render_template('render_results.html', papers = papers, title ="Search Results", selections = [5,10,20,50], per_page=per_page)
 
 
 @app.route('/download', methods = ['POST','GET'])
