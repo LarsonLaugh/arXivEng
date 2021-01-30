@@ -11,7 +11,7 @@ ValidationError)
 # module
 app = Flask(__name__)
 db = SQLAlchemy(app)
-
+app.config.from_pyfile('config.py')
 # route
 
 # Register Jinja filter
