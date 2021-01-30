@@ -8,6 +8,18 @@
     #return_button {
         margin-bottom: 1rem;
     }
+    body{
+        font-size: 0.8rem;
+    }
+    button{
+        margin-top:0.2rem;
+        margin-bottom:1rem;
+    }
+    input{
+        margin-top:0.2rem;
+        margin-bottom:1rem;
+        width: 25rem;
+    }
 </style>
 
 <form action="{{ url_for('search') }}">
@@ -26,11 +38,15 @@
 <a class = "btn btn-outline-primary mb-4" href="{{ url_for('result', per_page=per_page, sort_by = 'time', sort_order = 'asc') }}">ascSort</a>
 <a class = "btn btn-outline-primary mb-4" href="{{ url_for('result', per_page=per_page, sort_by = 'time', sort_order = 'desc') }}">descSort</a>
 
-
+<form action="{{url_for('change_folder')}}" method = "POST">
+    <label for="download_path"> Download Folder</label>
+    <input type="text" placeholder="{{path}}" name="path" id="download_path">
+    <button type="submit">Update</button>
+</form>
 
 <form action="{{url_for('download')}}" method="POST">
     <table class="table table-dark table-hover">
-        <caption>List of users</caption>
+        <caption>List of papers</caption>
         <thead>
             <tr>
               <th scope="col">#</th>

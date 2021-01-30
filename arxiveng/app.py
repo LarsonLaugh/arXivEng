@@ -5,15 +5,13 @@ from flask_wtf import FlaskForm
 from wtforms import (StringField, PasswordField, BooleanField, SubmitField, SelectField,
 RadioField,TextAreaField, IntegerField)
 from wtforms.validators import (InputRequired, Email, Length, DataRequired, EqualTo, 
-ValidationError, NumberRange)
+ValidationError)
 
 
 # module
 app = Flask(__name__)
 db = SQLAlchemy(app)
-app.config['SECRET_KEY'] = b" '-MB\xa0V\x1f\xdf;&\x11\x13R\xb0\xf5|\xa3\x88\xb8D\xca]A"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///cache.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 # route
 
 # Register Jinja filter
@@ -24,7 +22,6 @@ def search():
     form_kw = KSearchForm()
     form_adv = ASearchForm()
     return render_template('index.html',form_kw=form_kw, form_adv = form_adv)
-
 
 
 @app.route('/result', methods = ['POST','GET'])
@@ -61,11 +58,10 @@ def result():
             build_cache(papers)
             papers = Paper.query.paginate(page=page, per_page=per_page)
             return render_template('render_results.html', papers = papers, title ="Search Results", selections = [5,10,20,50], engine = engine,
-            per_page=per_page, sort_by = sort_by, sort_order = sort_order)
+            per_page=per_page, sort_by = sort_by, sort_order = sort_order, path = app.config['DOWNLOAD_FOLDER'])
         else:
             flash('Sorry. no result is available in arXiv', 'warning')
             return redirect(url_for('search'))
-
     else:
         if sort_by == 'time' and sort_order == 'desc':
             papers = Paper.query.order_by(Paper.publish_time.desc()).paginate(page=page, per_page=per_page)
@@ -74,76 +70,8 @@ def result():
         else:
             papers = Paper.query.paginate(page=page, per_page=per_page)
         return render_template('render_results.html', papers = papers, title ="Search Results", selections = [5,10,20,50], engine = engine,
-        per_page=per_page, sort_by = sort_by, sort_order = sort_order)
+        per_page=per_page, sort_by = sort_by, sort_order = sort_order, path = app.config['DOWNLOAD_FOLDER'])
 
-
-
-
-# @app.route('/kwsearch', methods = ['POST', 'GET'])
-# def kwSearch():
-#     page = request.args.get('page', 1, type=int)
-#     per_page = request.args.get('per_page', 5, type = int)
-#     sort_by = request.args.get('sort_by','none',type = str)
-#     sort_order = request.args.get('sort_order','desc',type = str)
-#     if request.method == "POST":
-#         form = dict(request.form)
-#         papers = arxiv.query(
-#             query = form.get('keyword'),
-#             max_results = max_result_trans(form.get('max_results')),  
-#             sort_by = form.get('sort_by'),
-#             sort_order = form.get('sort_order')
-#         )
-#         if papers:
-#             clear_cache()
-#             build_cache(papers)
-#             flash('Your keyword engine is on', 'success') 
-#             papers = Paper.query.paginate(page=page, per_page=per_page)
-#             return render_template('render_results.html', papers = papers, title ="Search Results", selections = [5,10,20,50], 
-#             per_page=per_page, sort_by = sort_by, sort_order = sort_order)
-#         else:
-#             flash('Sorry. no result is available in arXiv', 'warning')
-#             return redirect(url_for('search'))
-#     else:
-#         if sort_by == 'time' and sort_order == 'desc':
-#             papers = Paper.query.order_by(Paper.publish_time.desc()).paginate(page=page, per_page=per_page)
-#         elif sort_by == 'time' and sort_order == 'asc':
-#             papers = Paper.query.order_by(Paper.publish_time.asc()).paginate(page=page, per_page=per_page)
-#         else:
-#             papers = Paper.query.paginate(page=page, per_page=per_page)
-#         return render_template('render_results.html', papers = papers, title ="Search Results", selections = [5,10,20,50], 
-#         per_page=per_page, sort_by = sort_by, sort_order = sort_order)
-
-
-
-# @app.route('/advsearch', methods = ['POST','GET'])
-# def advSearch():
-#     page = request.args.get('page', 1, type=int)
-#     per_page = request.args.get('per_page', 5, type = int)
-#     if request.method == 'POST':
-#         form = dict(request.form)
-#         papers = arxiv.query(
-#             query = render_query(form.get('field1_input'),form.get('field1_choice'),form.get('logic12'),form.get('field2_input'),form.get('field2_choice')),
-#             max_results = max_result_trans(form.get('max_results')),  
-#             sort_by = form.get('sort_by'),
-#             sort_order = form.get('sort_order')
-#         )
-#         if papers:
-#             clear_cache()
-#             build_cache(papers)
-#             flash('Your advanced engine is on', 'success')  
-#             papers = Paper.query.paginate(page=page, per_page=per_page)
-#             return render_template('render_results.html', papers = papers, title ="Search Results", selections = [5,10,20,50], per_page=per_page)
-#         else:
-#             flash('Sorry. no result is available in arXiv', 'warning')
-#             return redirect(url_for('search'))
-#     else:
-#         if sort_by == 'time' and sort_order == 'desc':
-#             papers = Paper.query.order_by(Paper.publish_time.desc()).paginate(page=page, per_page=per_page)
-#         elif sort_by == 'time' and sort_order == 'asc':
-#             papers = Paper.query.order_by(Paper.publish_time.asc()).paginate(page=page, per_page=per_page)
-#         else:
-#             papers = Paper.query.paginate(page=page, per_page=per_page)
-#         return render_template('render_results.html', papers = papers, title ="Search Results", selections = [5,10,20,50], per_page=per_page)
 
 
 @app.route('/download', methods = ['POST','GET'])
@@ -153,21 +81,26 @@ def download():
             if request.form.getlist('download_list'):
                 papers_to_download = arxiv.query(id_list=request.form.getlist('download_list'))
                 for paper in papers_to_download:
-                    arxiv.download(paper, dirpath ='./instance/download/')
+                    arxiv.download(paper, dirpath =app.config['DOWNLOAD_FOLDER'])
                 flash('Your download is completed.','success')
-                return redirect(url_for('kwSearch'))
+                return redirect(url_for('result'))
+            else:
+                return redirect(url_for('result'))
         except:
             flash('Your download failed. The paper may not be rightful to download','danger')
-            return redirect(url_for('kwSearch'))
+            return redirect(url_for('result'))
     else:
-        return redirect(url_for('kwSearch'))
+        return redirect(url_for('result'))
         
-
+@app.route('/change_folder', methods = ['POST'])
+def change_folder():
+    app.config['DOWNLOAD_FOLDER'] = request.form.get('path')
+    return redirect(url_for('result'))
 # form
 
 
 class KSearchForm(FlaskForm):
-    keyword = StringField('Keyword', validators=[
+    keyword = TextAreaField('Keyword', validators=[
                            InputRequired(), Length(max=500)])
     # field = SelectField('field', choices = [field for field in fields])
     max_results = SelectField('max_results', choices=["default","20","50","100","200"])
@@ -191,9 +124,6 @@ class ASearchForm(FlaskForm):
     sort_order = SelectField('Sort Order', choices=["descending","ascending"])
     submit = SubmitField('Go')
 
-
-class DownloadForm(FlaskForm):
-    download = SubmitField('Download')
 
 # model 
 

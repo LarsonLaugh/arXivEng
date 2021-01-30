@@ -6,10 +6,11 @@
 {% block body %}
 <style>
     body{
-        font-family: 'Montserrat Alternates' , sans-serif;
         display: flex;
         flex-direction: row;
         align-items: center;
+        font-size: 1.4rem;
+        background-color: rgb(129, 248, 242);
     }
 
     .wrapper{
@@ -29,7 +30,7 @@
         margin: 1rem 0;
     }
     .form-label{
-        font-size: 0.8rem;
+        font-size: 1.2rem;
         margin-bottom: -0.2rem;
         font-weight: bold;
     }
@@ -40,10 +41,10 @@
         font-family:inherit;
         width: 16rem;
     }
-
-
-
 </style>
+
+
+
 <div class="wrapper">
     <div class = "form-group">
         <div class="title"> Keyword </div>
@@ -52,7 +53,7 @@
             <div class="d-grid gap-2 col-6 mx-auto">
                 <div class="d-grid gap-2">
                     <label class="form-label">{{ form_kw.keyword.label }}</label>
-                    {{ form_kw.keyword(class="form-input") }}
+                    {{ form_kw.keyword(class="form-input",col="15",row="10") }}
                 </div> 
         
                 <div class="d-grid gap-2">
