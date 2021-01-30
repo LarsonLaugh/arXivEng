@@ -83,7 +83,7 @@
             {% endfor %}
         </tbody>
     </table>
-    <div style="display: flex; flex-direction: row;">
+    <div style="display: flex; flex-direction: row; transform: translateX(50%);">
         {% for page_num in papers.iter_pages(left_edge=1,right_edge=1,left_current=2,right_current=2) %}
             {% if page_num %}
                 {% if page_num == papers.page %}
