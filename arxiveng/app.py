@@ -58,7 +58,7 @@ def result():
             build_cache(papers)
             papers = Paper.query.paginate(page=page, per_page=per_page)
             return render_template('render_results.html', papers = papers, title ="Search Results", selections = [5,10,20,50], engine = engine,
-            per_page=per_page, sort_by = sort_by, sort_order = sort_order, path = app.config['DOWNLOAD_FOLDER'])
+            per_page=per_page, sort_by = sort_by, sort_order = sort_order)
         else:
             flash('Sorry. no result is available in arXiv', 'warning')
             return redirect(url_for('search'))
@@ -70,7 +70,7 @@ def result():
         else:
             papers = Paper.query.paginate(page=page, per_page=per_page)
         return render_template('render_results.html', papers = papers, title ="Search Results", selections = [5,10,20,50], engine = engine,
-        per_page=per_page, sort_by = sort_by, sort_order = sort_order, path = app.config['DOWNLOAD_FOLDER'])
+        per_page=per_page, sort_by = sort_by, sort_order = sort_order)
 
 
 class KSearchForm(FlaskForm):
