@@ -14,11 +14,22 @@
     button{
         margin-top:0.2rem;
         margin-bottom:1rem;
+        margin-left: 0.5rem;
+        margin-right: 0.5rem
     }
     input{
         margin-top:0.2rem;
         margin-bottom:1rem;
+        height: 3rem;
         width: 25rem;
+        font-size: 1rem;
+    }
+    .wrapper_folder{
+        display:flex;
+        flex-direction: column;
+    }
+    label {
+        font-size: 1rem;
     }
 </style>
 
@@ -39,9 +50,13 @@
 <a class = "btn btn-outline-primary mb-4" href="{{ url_for('result', per_page=per_page, sort_by = 'time', sort_order = 'desc') }}">descSort</a>
 
 <form action="{{url_for('change_folder')}}" method = "POST">
-    <label for="download_path"> Download Folder</label>
-    <input type="text" placeholder="{{path}}" name="path" id="download_path">
-    <button type="submit">Update</button>
+    <div class="wrapper_folder">
+        <label for="download_path"> Download Folder</label>
+        <input type="text" placeholder="{{path}}" name="path" id="download_path">
+        
+    </div>
+    <button type="submit" class="btn btn-dark mb-4">Update</button>
+
 </form>
 
 <form action="{{url_for('download')}}" method="POST">
