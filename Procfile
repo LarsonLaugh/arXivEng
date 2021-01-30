@@ -1,1 +1,1 @@
-web: gunicorn arxiveng.wsgi
+web: gunicorn arxiveng:app
