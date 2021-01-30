@@ -73,32 +73,6 @@ def result():
         per_page=per_page, sort_by = sort_by, sort_order = sort_order, path = app.config['DOWNLOAD_FOLDER'])
 
 
-
-@app.route('/download', methods = ['POST','GET'])
-def download():
-    if request.method == 'POST':
-        try:
-            if request.form.getlist('download_list'):
-                papers_to_download = arxiv.query(id_list=request.form.getlist('download_list'))
-                for paper in papers_to_download:
-                    arxiv.download(paper, dirpath =app.config['DOWNLOAD_FOLDER'])
-                flash('Your download is completed.','success')
-                return redirect(url_for('result'))
-            else:
-                return redirect(url_for('result'))
-        except:
-            flash('Your download failed. The paper may not be rightful to download','danger')
-            return redirect(url_for('result'))
-    else:
-        return redirect(url_for('result'))
-        
-@app.route('/change_folder', methods = ['POST'])
-def change_folder():
-    app.config['DOWNLOAD_FOLDER'] = request.form.get('path')
-    return redirect(url_for('result'))
-# form
-
-
 class KSearchForm(FlaskForm):
     keyword = TextAreaField('Keyword', validators=[
                            InputRequired(), Length(max=500)])
