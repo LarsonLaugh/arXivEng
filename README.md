@@ -27,15 +27,16 @@ You will get the app run in the default WSGI server (not for production) at
 http://127.0.0.1:5000 and use your favorite browser. Have fun! For better
 deployment, one can employ gunicorn as the WSGI and Nginx to handle the internet 
 request. 
-![](page3.png)
 
+<img src="page3.png" alt="terminal" width="700" height="172">
 
 ### Interface
-
-![](page1.png)
+<img src="page1.png" alt="interface_page1" width="726" height="360">
 
 There are two ways to search in general: by keyword or more advanced field search.
-![](page2.png)
+
+<img src="page2.png" alt="interface_page1" width="707" height="370">
+
 The results will be displayed in a table-like list. One can choose how many results shown 
 on each page from 5 to 50m and also how to sort the results in a `descend` or `ascend` order.
 At the bottom center, one can go to any of the pages by clicking on the numbers.
