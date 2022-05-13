@@ -39,6 +39,8 @@ There are two ways to search in general: by keyword or more advanced field searc
 The results will be displayed in a table-like list. One can choose how many results shown 
 on each page from 5 to 50m and also how to sort the results in a `descend` or `ascend` order.
 At the bottom center, one can go to any of the pages by clicking on the numbers.
+Clicking `Read Online` button will bring one to the pdf downloading page, and you can save simply
+for later reading.
 
 
 
