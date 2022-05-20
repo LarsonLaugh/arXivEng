@@ -1,7 +1,8 @@
 # arXivEng
 
 This is a small practice project on `Flask` framework and a simple database `SQLAlchemy`.
-The purpose is to wrap the arXiv search engine API `arxiv.query()` in a web interface.
+The purpose is to wrap the arXiv search engine API `arxiv.query()` in a web interface and to offer
+caching the arXiv pdf files locally for later reading.
 
 ### How to use
 Git clone this repository
